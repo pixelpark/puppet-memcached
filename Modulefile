@@ -8,4 +8,3 @@ description 'Manage memcached via Puppet'
 project_page 'https://github.com/saz/puppet-memcached'
 
 dependency 'puppetlabs/stdlib', '>= 3.2.0'
-dependency 'puppetlabs/firewall', '>= 0.1.0'

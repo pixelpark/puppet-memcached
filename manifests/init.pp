@@ -5,7 +5,6 @@
 class memcached (
   $package_ensure  = 'present',
   $logfile         = '/var/log/memcached.log',
-  $manage_firewall = false,
   $max_memory      = false,
   $item_size       = false,
   $lock_memory     = false,
@@ -17,45 +16,20 @@ class memcached (
   $verbosity       = undef,
   $unix_socket     = undef,
   $install_dev     = false,
-  $processorcount  = $::processorcount
-) inherits memcached::params {
-
+  $processorcount  = $::processorcount) inherits memcached::params {
   # validate type and convert string to boolean if necessary
-  if type($manage_firewall) == 'String' {
-    $manage_firewall_bool = str2bool($manage_firewall)
-  } else {
-    $manage_firewall_bool = $manage_firewall
-  }
-  validate_bool($manage_firewall_bool)
-
   if $package_ensure == 'absent' {
     $service_ensure = 'stopped'
   } else {
     $service_ensure = 'running'
   }
 
-  package { $memcached::params::package_name:
-    ensure => $package_ensure,
-  }
+  package { $memcached::params::package_name: ensure => $package_ensure, }
 
   if $install_dev {
     package { $memcached::params::dev_package_name:
       ensure  => $package_ensure,
       require => Package[$memcached::params::package_name]
-    }
-  }
-
-  if $manage_firewall_bool == true {
-    firewall { "100_tcp_${tcp_port}_for_memcached":
-      port   => $tcp_port,
-      proto  => 'tcp',
-      action => 'accept',
-    }
-
-    firewall { "100_udp_${udp_port}_for_memcached":
-      port   => $udp_port,
-      proto  => 'udp',
-      action => 'accept',
     }
   }
 
